@@ -7,32 +7,39 @@ from xml.dom.minidom import parse, parseString
 
 
 def Init():
+    # 제목
     title = Label(MainWindow, text="공유저작물 검색 프로그램", font='helvetica 16')
     title.pack()
     title.place(x=120, y=0)
 
+    # 검색 박스
     serchbox = Entry(MainWindow)
     serchbox.pack()
     serchbox.place(x=10, y=60)
 
+    # 검색 버튼
     serchbutton = Button(MainWindow, text="검색")
     serchbutton.pack()
     serchbutton.place(x=150, y=60)
 
+    # 리스트 박스
     listbox = Listbox(MainWindow, height=23, width=30)
     listbox.pack()
     listbox.place(x=10, y=110)
 
+    # 사진 캔버스
     photo = PhotoImage(file="몽타뉴3.gif")
 
     canvas = Label(MainWindow, height=220, width=235, image=photo, bg='gray91', relief="ridge")
     canvas.pack()
     canvas.place(x=240, y=110)
 
+    # 정보 박스
     infobox = Text(MainWindow, width=34, height=7)
     infobox.pack()
     infobox.place(x=240, y=350)
 
+    # 이메일 전송 버튼
     emailbutton = Button(MainWindow, text="이메일로 전송")
     emailbutton.pack()
     emailbutton.place(x=240, y=450)
