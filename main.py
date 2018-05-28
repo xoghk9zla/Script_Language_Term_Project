@@ -18,14 +18,34 @@ def Init():
     serchbox.place(x=10, y=60)
 
     # 검색 버튼
-    serchbutton = Button(MainWindow, text="검색")
+    serchbutton = Button(MainWindow, text="검색", command=SearchButtonAction)
     serchbutton.pack()
     serchbutton.place(x=150, y=60)
+
+    # 전체 출력 버튼
+    printbutton = Button(MainWindow, text="모두 출력", command=PrintButtonAction)
+    printbutton.pack()
+    printbutton.place(x=200, y=60)
 
     # 리스트 박스
     listbox = Listbox(MainWindow, height=23, width=30)
     listbox.pack()
     listbox.place(x=10, y=110)
+
+    # 회사목록 전체 출력(이걸 위에 리스트 박스로 바꿔야함)
+    global RenderText
+    RenderTextScrollbar = Scrollbar(MainWindow)
+    RenderTextScrollbar.pack()
+    RenderTextScrollbar.place(x=375, y=200)
+
+    TempFont = font.Font(MainWindow, size=10, family='Consolas')
+    RenderText = Text(MainWindow, width=45, height=23, borderwidth=12, yscrollcommand=RenderTextScrollbar.set)
+    RenderText.pack()
+    RenderText.place(x=10, y=110)
+    RenderTextScrollbar.config(command=RenderText.yview)
+    RenderTextScrollbar.pack(side=RIGHT, fill=BOTH)
+
+    RenderText.configure(state='disabled')
 
     # 사진 캔버스
     photo = PhotoImage(file="몽타뉴3.gif")
@@ -46,6 +66,25 @@ def Init():
 
 def SearchButtonAction():
     pass
+
+def PrintButtonAction():
+    cnt = 0
+    RenderText.configure(state='normal')
+    RenderText.delete(0.0, END)
+
+    companyList = DocData.childNodes
+    companyname = companyList[0].childNodes
+    for item in companyname:
+        if item.nodeName == "row":
+            subitem = item.childNodes
+            for atom in subitem:
+                if atom.nodeName in "BIZPLC_NM":
+                    cnt = cnt + 1
+                    RenderText.insert(INSERT, "[{0}]회사명: {1} \n".format(cnt, atom.firstChild.nodeValue))
+
+    RenderText.configure(state='disabled')
+    pass
+
 
 def MakeXML(): # xml 파일 만들기
     url = "https://openapi.gg.go.kr/GameSoftwaresDistribution?KEY=716a00130e0e49a196f9433942b4c728&pIndex=1&pSize=50"
@@ -74,6 +113,16 @@ def LoadXMLFile():  # xml 파일 불러오기
             return dom
     return None
 
+def SearchCompany():
+    companyList = DocData.childNodes
+    companyname = companyList[0].childNodes
+    for item in companyname:
+        if item.nodeName == "row":
+            subitem = item.childNodes
+            for atom in subitem:
+                if atom.nodeName in "BIZPLC_NM":
+                    print("회사이름:", atom.firstChild.nodeValue)
+
 MainWindow = Tk()
 MainWindow.title("공유저작물 검색 프로그램")
 MainWindow.geometry("500x500")
@@ -82,9 +131,7 @@ MainWindow.geometry("500x500")
 MakeXML()   # openApi를 xml 파일로 저장
 
 DocData = None  # xml 데이터를 저장 할 공간
-DocData = LoadXMLFile() # xml 로드
-
-print(DocData.toxml()) # xml 출력
+DocData = LoadXMLFile()     # xml 로드
 
 Init()
 
