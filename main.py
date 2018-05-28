@@ -8,7 +8,7 @@ from xml.dom.minidom import parse, parseString
 
 def Init():
     # 제목
-    title = Label(MainWindow, text="공유저작물 검색 프로그램", font='helvetica 16')
+    title = Label(MainWindow, text="경기도 게임회사를 알아보자", font='helvetica 16')
     title.pack()
     title.place(x=120, y=0)
 
@@ -23,29 +23,22 @@ def Init():
     serchbutton.place(x=150, y=60)
 
     # 전체 출력 버튼
-    printbutton = Button(MainWindow, text="모두 출력", command=PrintButtonAction)
+    printbutton = Button(MainWindow, text="모두 출력", command=PrintlistAction)
     printbutton.pack()
     printbutton.place(x=200, y=60)
 
     # 리스트 박스
-    listbox = Listbox(MainWindow, height=23, width=30)
+    global listbox
+    RenderTextScrollbar = Scrollbar(MainWindow)
+    listbox = Listbox(MainWindow, height=23, width=30, yscrollcommand=RenderTextScrollbar.set)
+
+
     listbox.pack()
     listbox.place(x=10, y=110)
-
-    # 회사목록 전체 출력(이걸 위에 리스트 박스로 바꿔야함)
-    global RenderText
-    RenderTextScrollbar = Scrollbar(MainWindow)
-    RenderTextScrollbar.pack()
-    RenderTextScrollbar.place(x=375, y=200)
-
-    TempFont = font.Font(MainWindow, size=10, family='Consolas')
-    RenderText = Text(MainWindow, width=45, height=23, borderwidth=12, yscrollcommand=RenderTextScrollbar.set)
-    RenderText.pack()
-    RenderText.place(x=10, y=110)
-    RenderTextScrollbar.config(command=RenderText.yview)
+    RenderTextScrollbar.config(command=listbox.yview)
     RenderTextScrollbar.pack(side=RIGHT, fill=BOTH)
+    listbox.configure(state='disabled')
 
-    RenderText.configure(state='disabled')
 
     # 사진 캔버스
     photo = PhotoImage(file="몽타뉴3.gif")
@@ -67,22 +60,23 @@ def Init():
 def SearchButtonAction():
     pass
 
-def PrintButtonAction():
+def PrintlistAction():
     cnt = 0
-    RenderText.configure(state='normal')
-    RenderText.delete(0.0, END)
+    listbox.delete(0,END)
 
     companyList = DocData.childNodes
     companyname = companyList[0].childNodes
     for item in companyname:
+        tempnum=0
         if item.nodeName == "row":
             subitem = item.childNodes
             for atom in subitem:
                 if atom.nodeName in "BIZPLC_NM":
                     cnt = cnt + 1
-                    RenderText.insert(INSERT, "[{0}]회사명: {1} \n".format(cnt, atom.firstChild.nodeValue))
+                    listbox.insert(tempnum, "[{0}]회사명: {1} \n".format(cnt, atom.firstChild.nodeValue))
+                    tempnum+=1
 
-    RenderText.configure(state='disabled')
+        listbox.configure(state='normal')
     pass
 
 
@@ -124,8 +118,8 @@ def SearchCompany():
                     print("회사이름:", atom.firstChild.nodeValue)
 
 MainWindow = Tk()
-MainWindow.title("공유저작물 검색 프로그램")
-MainWindow.geometry("500x500")
+MainWindow.title("취업하고 싶어요")
+MainWindow.geometry("505x500")
 
 
 MakeXML()   # openApi를 xml 파일로 저장
