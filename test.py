@@ -1,7 +1,6 @@
 from tkinter import *
 from tkinter import font
 
-import http.client
 import urllib.request
 from xml.dom.minidom import parse, parseString
 
@@ -97,7 +96,7 @@ def PrintlistAction():
 
 
 def MakeXML(): # xml 파일 만들기
-    url = "https://openapi.gg.go.kr/GameSoftwaresDistribution?KEY=716a00130e0e49a196f9433942b4c728&pIndex=1&pSize=500"
+    url = "https://openapi.gg.go.kr/GameSoftwaresDistribution?KEY=716a00130e0e49a196f9433942b4c728&pIndex=1&pSize=677"
     data = urllib.request.urlopen(url).read()
     f = open("company.xml", "wb")
     f.write(data)
@@ -122,16 +121,6 @@ def LoadXMLFile():  # xml 파일 불러오기
             print("XML Document loading complete")
             return dom
     return None
-
-def SearchCompany():
-    companyList = DocData.childNodes
-    companyname = companyList[0].childNodes
-    for item in companyname:
-        if item.nodeName == "row":
-            subitem = item.childNodes
-            for atom in subitem:
-                if atom.nodeName in "BIZPLC_NM":
-                    print("회사이름:", atom.firstChild.nodeValue)
 
 MainWindow = Tk()
 MainWindow.title("취업하고 싶어요")
