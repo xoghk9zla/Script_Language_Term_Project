@@ -1,7 +1,6 @@
 from tkinter import *
 from tkinter import font
 
-import http.client
 import urllib.request
 from xml.dom.minidom import parse, parseString
 
@@ -97,7 +96,7 @@ def PrintlistAction():
 
 
 def MakeXML(): # xml 파일 만들기
-    url = "https://openapi.gg.go.kr/GameSoftwaresDistribution?KEY=716a00130e0e49a196f9433942b4c728&pIndex=1&pSize=500"
+    url = "https://openapi.gg.go.kr/GameSoftwaresDistribution?KEY=716a00130e0e49a196f9433942b4c728&pIndex=1&pSize=677"
     data = urllib.request.urlopen(url).read()
     f = open("company.xml", "wb")
     f.write(data)
