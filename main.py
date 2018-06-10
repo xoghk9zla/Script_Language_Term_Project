@@ -95,11 +95,8 @@ def PrintlistAction():
     pass
 
 
-<<<<<<< HEAD
-def MakeXML(): # xml 파일 만들기
-=======
 def MakeXML():  # xml 파일 만들기
->>>>>>> 5e3cbdaffcea677e2e40431e7cc60ee55aeae2cd
+
     url = "https://openapi.gg.go.kr/GameSoftwaresDistribution?KEY=716a00130e0e49a196f9433942b4c728&pIndex=1&pSize=677"
     data = urllib.request.urlopen(url).read()
     f = open("company.xml", "wb")

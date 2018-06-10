@@ -1,8 +1,25 @@
+
+# encoding=utf8
 from tkinter import *
 from tkinter import font
 
 import urllib.request
 from xml.dom.minidom import parse, parseString
+
+import smtplib
+
+temp = "smtp.gmail.com"
+
+s=smtplib.SMTP(temp,587)
+s.ehlo()
+s.starttls()
+s.ehlo()
+s.login("xoghk9zla@gmail.com", "d7297mc!")
+
+
+def test():
+    print("?")
+    pass
 
 
 def Init():
@@ -30,8 +47,7 @@ def Init():
     # 리스트 박스
     global listbox
     RenderTextScrollbar = Scrollbar(MainWindow)
-    listbox = Listbox(MainWindow, height=23, width=30, yscrollcommand=RenderTextScrollbar.set)
-
+    listbox = Listbox(MainWindow, height=23, width=30, yscrollcommand=RenderTextScrollbar.set, selectmode=SINGLE)
     listbox.pack()
     listbox.place(x=10, y=110)
     RenderTextScrollbar.config(command=listbox.yview)
@@ -52,7 +68,7 @@ def Init():
     infobox.place(x=240, y=350)
 
     # 이메일 전송 버튼
-    emailbutton = Button(MainWindow, text="이메일로 전송")
+    emailbutton = Button(MainWindow, text="이메일로 전송", command=test)
     emailbutton.pack()
     emailbutton.place(x=240, y=450)
 
@@ -73,7 +89,9 @@ def SearchButtonAction():
                     listbox.insert(tempnum, "[{0}]회사명: {1} \n".format(cnt, temp1))
                     tempnum += 1
         listbox.configure(state='normal')
+
     pass
+
 
 def PrintlistAction():
     cnt = 0
@@ -94,6 +112,9 @@ def PrintlistAction():
         listbox.configure(state='normal')
     pass
 
+def EmailButtonAction():
+    test()
+    pass
 
 def MakeXML(): # xml 파일 만들기
     url = "https://openapi.gg.go.kr/GameSoftwaresDistribution?KEY=716a00130e0e49a196f9433942b4c728&pIndex=1&pSize=677"
@@ -121,6 +142,7 @@ def LoadXMLFile():  # xml 파일 불러오기
             print("XML Document loading complete")
             return dom
     return None
+
 
 MainWindow = Tk()
 MainWindow.title("취업하고 싶어요")
