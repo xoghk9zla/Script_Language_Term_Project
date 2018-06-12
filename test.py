@@ -5,36 +5,28 @@ import urllib.request
 from xml.dom.minidom import parse, parseString
 
 def test():
-
-    # 선택된 행이 있으면 그걸 키워드로 검색함
-    SelectedItemIndex = listbox.curselection()
-    if len(SelectedItemIndex):
-        SelectedItemText = listbox.get(SelectedItemIndex[0])
-
-        companyList = DocData.childNodes
-        companyname = companyList[0].childNodes
-        for item in companyname:
-            if item.nodeName == "row":
-                subitem = item.childNodes
-                for atom in subitem:
-                    if atom.nodeName in "BIZPLC_NM" and atom.firstChild.nodeValue == SelectedItemText:
-                        print(subitem[5].firstChild.nodeValue)
-                        if subitem[31].nodeName == "REFINE_LOTNO_ADDR":
-                            infobox.insert(INSERT, "회사명: {0}\n".format(subitem[5].firstChild.nodeValue))
-                            infobox.insert(INSERT, "주소: {0}\n".format(subitem[31].firstChild.nodeValue))
-                        elif subitem[33].nodeName == "REFINE_LOTNO_ADDR":
-                            infobox.insert(INSERT, "회사명: {0}\n".format(subitem[5].firstChild.nodeValue))
-                            infobox.insert(INSERT, "주소: {0}\n".format(subitem[31].firstChild.nodeValue))
-
-        SearchButtonAction()
     pass
-
 
 def Init():
     # 제목
     title = Label(MainWindow, text="경기도 게임회사를 알아보자", font='helvetica 16')
     title.pack()
     title.place(x=120, y=0)
+
+    # 검색 옵션
+    global radVar
+    global CompanySearch, AdressSearch
+    radVar = IntVar()
+    CompanySearch = False
+    AdressSearch = True
+
+    radiobuttton1 = Radiobutton(MainWindow, text="회사", variable=radVar, value=1,command=Click_RadioButton)
+    radiobuttton2 = Radiobutton(MainWindow, text="지역", variable=radVar, value=2,command=Click_RadioButton)
+    radiobuttton1.pack()
+    radiobuttton2.pack()
+    radiobuttton1.place(x=10, y=40)
+    radiobuttton2.place(x=70, y=40)
+    radVar.set(2)
 
     # 검색 박스
     global searchbox
@@ -55,7 +47,7 @@ def Init():
     printbutton.place(x=210, y=57)
 
     # 상세 정보 버튼
-    printbutton = Button(MainWindow, text="상세 정보", command=test)
+    printbutton = Button(MainWindow, text="상세 정보", command=DetailedInfomationAction)
     printbutton.pack()
     printbutton.place(x=290, y=57)
 
@@ -87,6 +79,17 @@ def Init():
     emailbutton.pack()
     emailbutton.place(x=240, y=450)
 
+
+def Click_RadioButton():
+    global CompanySearch, AdressSearch
+    if radVar.get() == 1:
+        CompanySearch = True
+        AdressSearch = False
+    if radVar.get() == 2:
+        CompanySearch = False
+        AdressSearch = True
+
+
 def SearchButtonAction():
     cnt = 0
     listbox.delete(0, END)
@@ -98,12 +101,16 @@ def SearchButtonAction():
         if item.nodeName == "row":
             subitem = item.childNodes
             for atom in subitem:
-                if atom.nodeName in "SIGUN_NM" and atom.firstChild.nodeValue == company_name:
-                    cnt += 1
-                    temp1 = subitem[5].firstChild.nodeValue
-                    listbox.insert(tempnum, "{0}".format(temp1))
-                    tempnum += 1
-        listbox.configure(state='normal')
+                if AdressSearch:
+                    if atom.nodeName in "SIGUN_NM" and atom.firstChild.nodeValue == company_name:
+                        cnt += 1
+                        listbox.insert(tempnum, "{0}".format(subitem[5].firstChild.nodeValue))
+                        tempnum += 1
+                elif CompanySearch:
+                    if atom.nodeName in "BIZPLC_NM" and atom.firstChild.nodeValue == company_name:
+                        listbox.insert(tempnum, "{0}".format(subitem[5].firstChild.nodeValue))
+                    pass
+            listbox.configure(state='normal')
     pass
 
 
@@ -124,6 +131,29 @@ def PrintlistAction():
                     tempnum+=1
 
         listbox.configure(state='normal')
+    pass
+
+
+def DetailedInfomationAction():
+    # 선택된 행이 있으면 그걸 키워드로 검색함
+    global SelectedItemText
+    SelectedItemIndex = listbox.curselection()
+    if len(SelectedItemIndex):
+        SelectedItemText = listbox.get(SelectedItemIndex[0])
+
+        companyList = DocData.childNodes
+        companyname = companyList[0].childNodes
+        for item in companyname:
+            if item.nodeName == "row":
+                subitem = item.childNodes
+                for atom in subitem:
+                    if atom.nodeName in "BIZPLC_NM" and atom.firstChild.nodeValue == SelectedItemText:
+                        if subitem[31].nodeName == "REFINE_LOTNO_ADDR":
+                            infobox.insert(INSERT, "회사명: {0}\n".format(subitem[5].firstChild.nodeValue))
+                            infobox.insert(INSERT, "주소: {0}\n".format(subitem[31].firstChild.nodeValue))
+                        elif subitem[33].nodeName == "REFINE_LOTNO_ADDR":
+                            infobox.insert(INSERT, "회사명: {0}\n".format(subitem[5].firstChild.nodeValue))
+                            infobox.insert(INSERT, "주소: {0}\n".format(subitem[31].firstChild.nodeValue))
     pass
 
 def EmailButtonAction():
