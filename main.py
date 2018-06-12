@@ -4,6 +4,8 @@ from tkinter import font
 import urllib.request
 from xml.dom.minidom import parse, parseString
 
+def test():
+    pass
 
 def Init():
     # 제목
@@ -11,27 +13,48 @@ def Init():
     title.pack()
     title.place(x=120, y=0)
 
+    # 검색 옵션
+    global radVar
+    global CompanySearch, AdressSearch
+    radVar = IntVar()
+    CompanySearch = False
+    AdressSearch = True
+
+    radiobuttton1 = Radiobutton(MainWindow, text="회사", variable=radVar, value=1,command=Click_RadioButton)
+    radiobuttton2 = Radiobutton(MainWindow, text="지역", variable=radVar, value=2,command=Click_RadioButton)
+    radiobuttton1.pack()
+    radiobuttton2.pack()
+    radiobuttton1.place(x=10, y=40)
+    radiobuttton2.place(x=70, y=40)
+    radVar.set(2)
+
     # 검색 박스
     global searchbox
-    searchbox = Entry(MainWindow)
+    global strKeyword
+    strKeyword = StringVar()
+    searchbox = Entry(MainWindow, textvariable = strKeyword)
     searchbox.pack()
     searchbox.place(x=10, y=60)
 
     # 검색 버튼
     searchbutton = Button(MainWindow, text="검색", command=SearchButtonAction)
     searchbutton.pack()
-    searchbutton.place(x=150, y=60)
+    searchbutton.place(x=160, y=57)
 
     # 전체 출력 버튼
     printbutton = Button(MainWindow, text="모두 출력", command=PrintlistAction)
     printbutton.pack()
-    printbutton.place(x=200, y=60)
+    printbutton.place(x=210, y=57)
+
+    # 상세 정보 버튼
+    printbutton = Button(MainWindow, text="상세 정보", command=DetailedInfomationAction)
+    printbutton.pack()
+    printbutton.place(x=290, y=57)
 
     # 리스트 박스
     global listbox
     RenderTextScrollbar = Scrollbar(MainWindow)
-    listbox = Listbox(MainWindow, height=23, width=30, yscrollcommand=RenderTextScrollbar.set)
-
+    listbox = Listbox(MainWindow, height=23, width=30, yscrollcommand=RenderTextScrollbar.set, selectmode=SINGLE)
     listbox.pack()
     listbox.place(x=10, y=110)
     RenderTextScrollbar.config(command=listbox.yview)
@@ -41,20 +64,31 @@ def Init():
 
     # 사진 캔버스
     photo = PhotoImage(file="몽타뉴3.gif")
-
     canvas = Label(MainWindow, height=220, width=235, image=photo, bg='gray91', relief="ridge")
     canvas.pack()
     canvas.place(x=240, y=110)
 
     # 정보 박스
+    global infobox
     infobox = Text(MainWindow, width=34, height=7)
     infobox.pack()
     infobox.place(x=240, y=350)
 
     # 이메일 전송 버튼
-    emailbutton = Button(MainWindow, text="이메일로 전송")
+    emailbutton = Button(MainWindow, text="이메일로 전송", command=test)
     emailbutton.pack()
     emailbutton.place(x=240, y=450)
+
+
+def Click_RadioButton():
+    global CompanySearch, AdressSearch
+    if radVar.get() == 1:
+        CompanySearch = True
+        AdressSearch = False
+    if radVar.get() == 2:
+        CompanySearch = False
+        AdressSearch = True
+
 
 def SearchButtonAction():
     cnt = 0
@@ -67,13 +101,18 @@ def SearchButtonAction():
         if item.nodeName == "row":
             subitem = item.childNodes
             for atom in subitem:
-                if atom.nodeName in "SIGUN_NM" and atom.firstChild.nodeValue == company_name:
-                    cnt += 1
-                    temp1 = subitem[5].firstChild.nodeValue
-                    listbox.insert(tempnum, "[{0}]회사명: {1} \n".format(cnt, temp1))
-                    tempnum += 1
-        listbox.configure(state='normal')
+                if AdressSearch:
+                    if atom.nodeName in "SIGUN_NM" and atom.firstChild.nodeValue == company_name:
+                        cnt += 1
+                        listbox.insert(tempnum, "{0}".format(subitem[5].firstChild.nodeValue))
+                        tempnum += 1
+                elif CompanySearch:
+                    if atom.nodeName in "BIZPLC_NM" and atom.firstChild.nodeValue == company_name:
+                        listbox.insert(tempnum, "{0}".format(subitem[5].firstChild.nodeValue))
+                    pass
+            listbox.configure(state='normal')
     pass
+
 
 def PrintlistAction():
     cnt = 0
@@ -95,15 +134,39 @@ def PrintlistAction():
     pass
 
 
-def MakeXML():  # xml 파일 만들기
+def DetailedInfomationAction():
+    # 선택된 행이 있으면 그걸 키워드로 검색함
+    global SelectedItemText
+    SelectedItemIndex = listbox.curselection()
+    if len(SelectedItemIndex):
+        SelectedItemText = listbox.get(SelectedItemIndex[0])
 
+        companyList = DocData.childNodes
+        companyname = companyList[0].childNodes
+        for item in companyname:
+            if item.nodeName == "row":
+                subitem = item.childNodes
+                for atom in subitem:
+                    if atom.nodeName in "BIZPLC_NM" and atom.firstChild.nodeValue == SelectedItemText:
+                        if subitem[31].nodeName == "REFINE_LOTNO_ADDR":
+                            infobox.insert(INSERT, "회사명: {0}\n".format(subitem[5].firstChild.nodeValue))
+                            infobox.insert(INSERT, "주소: {0}\n".format(subitem[31].firstChild.nodeValue))
+                        elif subitem[33].nodeName == "REFINE_LOTNO_ADDR":
+                            infobox.insert(INSERT, "회사명: {0}\n".format(subitem[5].firstChild.nodeValue))
+                            infobox.insert(INSERT, "주소: {0}\n".format(subitem[31].firstChild.nodeValue))
+    pass
+
+def EmailButtonAction():
+    test()
+    pass
+
+def MakeXML(): # xml 파일 만들기
     url = "https://openapi.gg.go.kr/GameSoftwaresDistribution?KEY=716a00130e0e49a196f9433942b4c728&pIndex=1&pSize=677"
     data = urllib.request.urlopen(url).read()
     f = open("company.xml", "wb")
     f.write(data)
     f.close()
     pass
-
 
 def LoadXMLFile():  # xml 파일 불러오기
     fileName = 'company.xml'    # xml 파일 이름
@@ -123,17 +186,6 @@ def LoadXMLFile():  # xml 파일 불러오기
             print("XML Document loading complete")
             return dom
     return None
-
-
-def SearchCompany():
-    companyList = DocData.childNodes
-    companyname = companyList[0].childNodes
-    for item in companyname:
-        if item.nodeName == "row":
-            subitem = item.childNodes
-            for atom in subitem:
-                if atom.nodeName in "BIZPLC_NM":
-                    print("회사이름:", atom.firstChild.nodeValue)
 
 
 MainWindow = Tk()
