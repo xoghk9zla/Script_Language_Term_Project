@@ -4,7 +4,10 @@ from tkinter import font
 import urllib.request
 from xml.dom.minidom import parse, parseString
 
+import teller
+
 def test():
+
     pass
 
 def Init():
@@ -127,7 +130,7 @@ def PrintlistAction():
             for atom in subitem:
                 if atom.nodeName in "BIZPLC_NM":
                     cnt = cnt + 1
-                    listbox.insert(tempnum, "[{0}]회사명: {1} \n".format(cnt, atom.firstChild.nodeValue))
+                    listbox.insert(tempnum, "{0}".format(atom.firstChild.nodeValue))
                     tempnum+=1
 
         listbox.configure(state='normal')
@@ -199,4 +202,7 @@ DocData = LoadXMLFile()     # xml 로드
 
 Init()
 
+teller.Launcher()
+
 MainWindow.mainloop()
+
