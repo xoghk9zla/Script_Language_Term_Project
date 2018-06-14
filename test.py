@@ -67,7 +67,7 @@ def Init():
 
     # 사진 캔버스
     photo = PhotoImage(file="몽타뉴3.gif")
-    canvas = Label(MainWindow, height=220, width=235, image=photo, bg='gray91', relief="ridge")
+    canvas = Label(MainWindow, height=220, width=240, image=photo, bg='gray91', relief="ridge")
     canvas.pack()
     canvas.place(x=240, y=110)
 
@@ -138,6 +138,7 @@ def PrintlistAction():
 
 
 def DetailedInfomationAction():
+    infobox.delete('0.0', END)
     # 선택된 행이 있으면 그걸 키워드로 검색함
     global SelectedItemText
     SelectedItemIndex = listbox.curselection()
@@ -157,6 +158,7 @@ def DetailedInfomationAction():
                         elif subitem[33].nodeName == "REFINE_LOTNO_ADDR":
                             infobox.insert(INSERT, "회사명: {0}\n".format(subitem[5].firstChild.nodeValue))
                             infobox.insert(INSERT, "주소: {0}\n".format(subitem[31].firstChild.nodeValue))
+    #infobox.configure(state='disabled')
     pass
 
 def EmailButtonAction():
