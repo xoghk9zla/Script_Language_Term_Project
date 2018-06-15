@@ -7,7 +7,47 @@ from xml.dom.minidom import parse, parseString
 import teller
 
 def test():
+    global SubWindow
+    SubWindow = Toplevel(MainWindow)
+    SubWindow.title("이메일 전송")
+    SubWindow.geometry("400x300")
 
+    # 이메일 ID
+    emailidlabel = Label(SubWindow, text="[아이디]")
+    emailidlabel.pack()
+    emailidlabel.place(x=10, y=50)
+
+    emailid = Entry(SubWindow)
+    emailid.pack()
+    emailid.place(x=70, y=55)
+
+    # 이메일 PWD
+    emailpwdlabel = Label(SubWindow, text="[패스워드]")
+    emailpwdlabel.pack()
+    emailpwdlabel.place(x=10, y=75)
+
+    emailpwd = Entry(SubWindow)
+    emailpwd.pack()
+    emailpwd.place(x=70, y=80)
+
+    # 보낼 이메일 주소
+    emailadresslabel = Label(SubWindow, text="[주소]")
+    emailadresslabel.pack()
+    emailadresslabel.place(x=10, y=100)
+
+    emailadress = Entry(SubWindow)
+    emailadress.pack()
+    emailadress.place(x=70, y=105)
+
+    # 이메일 전송 버튼
+    sendbutton = Button(SubWindow,text="전송",command=SendButtonAction)
+    sendbutton.pack()
+    sendbutton.place(x=10, y=130)
+
+    SubWindow.mainloop()
+    pass
+
+def SendButtonAction():
     pass
 
 def Init():
@@ -35,7 +75,7 @@ def Init():
     global searchbox
     global strKeyword
     strKeyword = StringVar()
-    searchbox = Entry(MainWindow, textvariable = strKeyword)
+    searchbox = Entry(MainWindow)
     searchbox.pack()
     searchbox.place(x=10, y=60)
 
