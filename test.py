@@ -86,7 +86,7 @@ def Init():
     # 이메일 전송 버튼
     emailbutton = Button(MainWindow, text="이메일로 전송", command=EmailButtonAction)
     emailbutton.pack()
-    emailbutton.place(x=240, y=450)
+    emailbutton.place(x=312, y=450)
 
 
 def Click_RadioButton():
@@ -170,42 +170,42 @@ def EmailButtonAction():
     global SubWindow
     SubWindow = Toplevel(MainWindow)
     SubWindow.title("이메일 전송")
-    SubWindow.geometry("400x300")
+    SubWindow.geometry("300x170")
 
     # 이메일 ID
     global emailid
-    emailidlabel = Label(SubWindow, text="[아이디]")
+    emailidlabel = Label(SubWindow, text="[송신자ID]")
     emailidlabel.pack()
-    emailidlabel.place(x=10, y=50)
+    emailidlabel.place(x=10, y=30)
 
-    emailid = Entry(SubWindow)
+    emailid = Entry(SubWindow,width =28)
     emailid.pack()
-    emailid.place(x=70, y=55)
+    emailid.place(x=80, y=33)
 
     # 이메일 PWD
     global emailpwd
     emailpwdlabel = Label(SubWindow, text="[패스워드]")
     emailpwdlabel.pack()
-    emailpwdlabel.place(x=10, y=75)
+    emailpwdlabel.place(x=10, y=55)
 
-    emailpwd = Entry(SubWindow)
+    emailpwd = Entry(SubWindow, width = 28)
     emailpwd.pack()
-    emailpwd.place(x=70, y=80)
+    emailpwd.place(x=80, y=58)
 
     # 보낼 이메일 주소
     global emailadress
-    emailadresslabel = Label(SubWindow, text="[주소]")
+    emailadresslabel = Label(SubWindow, text="[수신자ID]")
     emailadresslabel.pack()
-    emailadresslabel.place(x=10, y=100)
+    emailadresslabel.place(x=10, y=80)
 
-    emailadress = Entry(SubWindow)
+    emailadress = Entry(SubWindow,width =28)
     emailadress.pack()
-    emailadress.place(x=70, y=105)
+    emailadress.place(x=80, y=83)
 
     # 이메일 전송 버튼
     sendbutton = Button(SubWindow, text="전송", command=SendButtonAction)
     sendbutton.pack()
-    sendbutton.place(x=10, y=130)
+    sendbutton.place(x=137, y=123)
 
     SubWindow.mainloop()
     pass
