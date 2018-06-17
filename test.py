@@ -10,6 +10,9 @@ import smtplib
 from email.mime.base import MIMEBase
 from email.mime.text import MIMEText
 
+from io import BytesIO
+from PIL import Image, ImageTk
+
 def test():
     pass
 
@@ -70,8 +73,15 @@ def Init():
 
 
     # 사진 캔버스
-    photo = PhotoImage(file="몽타뉴3.gif")
-    canvas = Label(MainWindow, height=220, width=240, image=photo, bg='gray91', relief="ridge")
+    global photo
+    url = 'https://maps.googleapis.com/maps/api/staticmap?center=Brooklyn+Bridge,New+York,NY&zoom=13&size=600x300&maptype=roadmap&markers=color:blue%7Clabel:S%7C40.702147,-74.015794&markers=color:green%7Clabel:G%7C40.711614,-74.012318&markers=color:red%7Clabel:C%7C40.718217,-73.998284&key=AIzaSyCam6mmZ2GXK0qdLYRTFOd113RoWkF-ypk'
+    with urllib.request.urlopen(url) as u:
+        raw_data = u.read()
+
+    im = Image.open(BytesIO(raw_data))
+    photo = ImageTk.PhotoImage(im)
+
+    canvas = Label(MainWindow, image=photo, height=220, width=240, relief="ridge")
     canvas.pack()
     canvas.place(x=240, y=110)
 
@@ -285,6 +295,8 @@ DocData = None  # xml 데이터를 저장 할 공간
 DocData = LoadXMLFile()     # xml 로드
 
 Init()
+
+
 
 teller.Launcher()
 

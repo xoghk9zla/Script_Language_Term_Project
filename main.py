@@ -4,8 +4,6 @@ from tkinter import font
 import urllib.request
 from xml.dom.minidom import parse, parseString
 
-import folium
-
 import teller
 
 import smtplib
@@ -77,15 +75,6 @@ def Init():
     listbox.configure(state='disabled')
 
     # openapi로 이미지 url을 가져옴.
-    global canvas
-
-    photo = PhotoImage(file="몽타뉴3.gif")
-    canvas = Label(MainWindow, height=220, width=240, image=photo, bg='gray91', relief="ridge")
-    canvas.pack()
-    canvas.place(x=240, y=110)
-
-
-
 
 
 
@@ -183,10 +172,18 @@ def DetailedInfomationAction():
                             print(subitem[33].firstChild.nodeValue)
                             address = subitem[33].firstChild.nodeValue
 
-    baseurl = "https://maps.googleapis.com/maps/api/staticmap?center="
-    key = "AIzaSyAdE-8E-0waDGtRqNbCDhUrjxniJVG-hNo"
-    url = baseurl + address + "&zoom=17&size=220x240&maptype=roadmap&key="+key+".JPG"
-    print(url)
+    baseurl = u"https://maps.googleapis.com/maps/api/staticmap?center="
+    key = u"AIzaSyAdE-8E-0waDGtRqNbCDhUrjxniJVG-hNo"
+    address = address.split()
+    temp = ""
+    for i in address:
+        print(i)
+        temp += i
+
+    address = temp
+    print(temp)
+    url = baseurl + address + u"&zoom=17&size=220x240&maptype=roadmap&key="+key+".JPG"
+    #print(url)
     arl="https://maps.googleapis.com/maps/api/staticmap?center=Brooklyn+Bridge,New+York,NY&zoom=13&size=600x300&maptype=roadmap&markers=color:blue%7Clabel:S%7C40.702147,-74.015794&markers=color:green%7Clabel:G%7C40.711614,-74.012318&markers=color:red%7Clabel:C%7C40.718217,-73.998284&key=AIzaSyAdE-8E-0waDGtRqNbCDhUrjxniJVG-hNo"
 
     with urllib.request.urlopen(url) as u:
@@ -322,6 +319,12 @@ DocData = None  # xml 데이터를 저장 할 공간
 DocData = LoadXMLFile()     # xml 로드
 
 Init()
+global canvas
+
+photo = PhotoImage(file="몽타뉴3.gif")
+canvas = Label(MainWindow, image=photo, height=220, width=240, bg='gray91', relief="ridge")
+canvas.pack()
+canvas.place(x=240, y=110)
 
 teller.Launcher()
 
