@@ -1,21 +1,30 @@
+# -*- coding: utf-8 -*-
 from tkinter import *
-from tkinter import font
 
+from urllib import *
+import urllib
 import urllib.request
-from xml.dom.minidom import parse, parseString
+
+from xml.dom.minidom import parse
 
 import teller
 
 import smtplib
+
 from email.mime.base import MIMEBase
 from email.mime.text import MIMEText
 
+from io import BytesIO
+from PIL import Image, ImageTk
+
 
 def test():
+
     pass
 
 
 def Init():
+
     # 제목
     title = Label(MainWindow, text="경기도 게임회사를 알아보자", font='helvetica 16')
     title.pack()
@@ -69,17 +78,13 @@ def Init():
     RenderTextScrollbar.pack(side=RIGHT, fill=BOTH)
     listbox.configure(state='disabled')
 
-
-    # 사진 캔버스
+    # openapi로 이미지 url을 가져옴.
+    global canvas
     photo = PhotoImage(file="몽타뉴3.gif")
-    canvas = Label(MainWindow, image=photo, height=220, width=240, bg='gray91', relief="ridge")
+    canvas = Label(MainWindow, height=220, width=240, image=photo, bg='gray91', relief="ridge")
     canvas.pack()
     canvas.place(x=240, y=110)
 
-<<<<<<< HEAD
-
-=======
->>>>>>> parent of 420a829... 지도 URL 작성
     # 정보 박스
     global infobox
     infobox = Text(MainWindow, width=34, height=7)
@@ -103,11 +108,11 @@ def Click_RadioButton():
 
 
 def SearchButtonAction():
-    cnt = 0
     listbox.delete(0, END)
     company_name = searchbox.get()
     companyList = DocData.childNodes
     companyname = companyList[0].childNodes
+
     for item in companyname:
         tempnum = 0
         if item.nodeName == "row":
@@ -115,21 +120,19 @@ def SearchButtonAction():
             for atom in subitem:
                 if AdressSearch:
                     if atom.nodeName in "SIGUN_NM" and atom.firstChild.nodeValue == company_name:
-                        cnt += 1
                         listbox.insert(tempnum, "{0}".format(subitem[5].firstChild.nodeValue))
                         tempnum += 1
                 elif CompanySearch:
                     if atom.nodeName in "BIZPLC_NM" and atom.firstChild.nodeValue == company_name:
                         listbox.insert(tempnum, "{0}".format(subitem[5].firstChild.nodeValue))
                     pass
+
             listbox.configure(state='normal')
     pass
 
 
 def PrintlistAction():
-    cnt = 0
     listbox.delete(0,END)
-
     companyList = DocData.childNodes
     companyname = companyList[0].childNodes
     for item in companyname:
@@ -138,66 +141,52 @@ def PrintlistAction():
             subitem = item.childNodes
             for atom in subitem:
                 if atom.nodeName in "BIZPLC_NM":
-                    cnt = cnt + 1
                     listbox.insert(tempnum, "{0}".format(atom.firstChild.nodeValue))
                     tempnum+=1
-
         listbox.configure(state='normal')
+
     pass
 
 
 def DetailedInfomationAction():
+    global canvas
     infobox.delete('0.0', END)
     # 선택된 행이 있으면 그걸 키워드로 검색함
     global SelectedItemText
     SelectedItemIndex = listbox.curselection()
     if len(SelectedItemIndex):
         SelectedItemText = listbox.get(SelectedItemIndex[0])
-
+        global address
         companyList = DocData.childNodes
         companyname = companyList[0].childNodes
+
         for item in companyname:
             if item.nodeName == "row":
                 subitem = item.childNodes
                 for atom in subitem:
                     if atom.nodeName in "BIZPLC_NM" and atom.firstChild.nodeValue == SelectedItemText:
+                        infobox.insert(INSERT, "회사명: {0}\n".format(subitem[5].firstChild.nodeValue))
                         if subitem[31].nodeName == "REFINE_LOTNO_ADDR":
-                            infobox.insert(INSERT, "회사명: {0}\n".format(subitem[5].firstChild.nodeValue))
                             infobox.insert(INSERT, "주소: {0}\n".format(subitem[31].firstChild.nodeValue))
+                            address = subitem[31].firstChild.nodeValue
                         elif subitem[33].nodeName == "REFINE_LOTNO_ADDR":
-                            infobox.insert(INSERT, "회사명: {0}\n".format(subitem[5].firstChild.nodeValue))
-<<<<<<< HEAD
                             infobox.insert(INSERT, "주소: {0}\n".format(subitem[33].firstChild.nodeValue))
-                            print(subitem[33].firstChild.nodeValue)
                             address = subitem[33].firstChild.nodeValue
 
-    baseurl = u"https://maps.googleapis.com/maps/api/staticmap?center="
-    key = u"AIzaSyAdE-8E-0waDGtRqNbCDhUrjxniJVG-hNo"
-    address = address.split()
-    temp = ""
-    for i in address:
-        print(i)
-        temp += i
-
-    address = temp
-    print(temp)
-    url = baseurl + address + u"&zoom=17&size=220x240&maptype=roadmap&key="+key
-    print(url)
-    arl="https://maps.googleapis.com/maps/api/staticmap?center=Brooklyn+Bridge,New+York,NY&zoom=13&size=600x300&maptype=roadmap&markers=color:blue%7Clabel:S%7C40.702147,-74.015794&markers=color:green%7Clabel:G%7C40.711614,-74.012318&markers=color:red%7Clabel:C%7C40.718217,-73.998284&key=AIzaSyAdE-8E-0waDGtRqNbCDhUrjxniJVG-hNo"
+    baseurl = "https://maps.googleapis.com/maps/api/staticmap?center="
+    key = "AIzaSyAdE-8E-0waDGtRqNbCDhUrjxniJVG-hNo"
+    url = baseurl + urllib.parse.quote_plus(address) + "&zoom=17&size=220x240&maptype=roadmap&key="+key
 
     with urllib.request.urlopen(url) as u:
         raw_data = u.read()
 
     im = Image.open(BytesIO(raw_data))
-
     photo = ImageTk.PhotoImage(im)
-    canvas.configure(image = photo)
+    canvas.configure(image=photo)
     canvas.image=photo
 
-=======
-                            infobox.insert(INSERT, "주소: {0}\n".format(subitem[31].firstChild.nodeValue))
->>>>>>> parent of 420a829... 지도 URL 작성
     pass
+
 
 def EmailButtonAction():
     global SubWindow
@@ -220,7 +209,6 @@ def EmailButtonAction():
     emailpwdlabel = Label(SubWindow, text="[패스워드]")
     emailpwdlabel.pack()
     emailpwdlabel.place(x=10, y=55)
-
     emailpwd = Entry(SubWindow, width = 28)
     emailpwd.pack()
     emailpwd.place(x=80, y=58)
@@ -241,6 +229,7 @@ def EmailButtonAction():
     sendbutton.place(x=137, y=123)
 
     SubWindow.mainloop()
+
     pass
 
 
@@ -249,12 +238,13 @@ def SendButtonAction():
     PWD = emailpwd.get()
     Adress = emailadress.get()
     SelectedItemIndex = listbox.curselection()
+
     if len(SelectedItemIndex):
         global SelectedItemText
         SelectedItemText = listbox.get(SelectedItemIndex[0])
-
         companyList = DocData.childNodes
         companyname = companyList[0].childNodes
+
         for item in companyname:
             if item.nodeName == "row":
                 subitem = item.childNodes
@@ -264,6 +254,7 @@ def SendButtonAction():
                             emailtext = "회사명: " + subitem[5].firstChild.nodeValue + "\n" + "운영여부: " + subitem[9].firstChild.nodeValue + "\n" + "주소명: " + subitem[31].firstChild.nodeValue + "\n"
                         elif subitem[33].nodeName == "REFINE_LOTNO_ADDR":
                             emailtext = "회사명: " + subitem[5].firstChild.nodeValue + "\n" + "운영여부: " + subitem[9].firstChild.nodeValue + "\n" + "주소명: " + subitem[33].firstChild.nodeValue + "\n"
+
 
     msg = MIMEBase("multipart", "alternative")
     msg['Subject'] = SelectedItemText + "의 상세정보"
@@ -289,6 +280,7 @@ def MakeXML(): # xml 파일 만들기
     f.write(data)
     f.close()
     pass
+
 
 def LoadXMLFile():  # xml 파일 불러오기
     fileName = 'company.xml'    # xml 파일 이름
@@ -321,8 +313,6 @@ DocData = LoadXMLFile()     # xml 로드
 
 Init()
 
-
 teller.Launcher()
 
 MainWindow.mainloop()
-
