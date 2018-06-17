@@ -120,7 +120,7 @@ def Init():
     # 이메일 전송 버튼
     emailbutton = Button(MainWindow, text="이메일로 전송", command=test)
     emailbutton.pack()
-    emailbutton.place(x=240, y=450)
+    emailbutton.place(x=312, y=450)
 
 
 def Click_RadioButton():
@@ -202,7 +202,51 @@ def DetailedInfomationAction():
     pass
 
 def EmailButtonAction():
+<<<<<<< HEAD
     test()
+=======
+    global SubWindow
+    SubWindow = Toplevel(MainWindow)
+    SubWindow.title("이메일 전송")
+    SubWindow.geometry("300x170")
+
+    # 이메일 ID
+    global emailid
+    emailidlabel = Label(SubWindow, text="[송신자ID]")
+    emailidlabel.pack()
+    emailidlabel.place(x=10, y=30)
+
+    emailid = Entry(SubWindow,width =28)
+    emailid.pack()
+    emailid.place(x=80, y=33)
+
+    # 이메일 PWD
+    global emailpwd
+    emailpwdlabel = Label(SubWindow, text="[패스워드]")
+    emailpwdlabel.pack()
+    emailpwdlabel.place(x=10, y=55)
+
+    emailpwd = Entry(SubWindow, width = 28)
+    emailpwd.pack()
+    emailpwd.place(x=80, y=58)
+
+    # 보낼 이메일 주소
+    global emailadress
+    emailadresslabel = Label(SubWindow, text="[수신자ID]")
+    emailadresslabel.pack()
+    emailadresslabel.place(x=10, y=80)
+
+    emailadress = Entry(SubWindow,width =28)
+    emailadress.pack()
+    emailadress.place(x=80, y=83)
+
+    # 이메일 전송 버튼
+    sendbutton = Button(SubWindow, text="전송", command=SendButtonAction)
+    sendbutton.pack()
+    sendbutton.place(x=137, y=123)
+
+    SubWindow.mainloop()
+>>>>>>> 66c013a2f301ee47e07cd962bf80b56486b58048
     pass
 
 def MakeXML(): # xml 파일 만들기

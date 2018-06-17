@@ -6,9 +6,15 @@ from xml.dom.minidom import parse, parseString
 
 import teller
 
-def test():
+import smtplib
+from email.mime.base import MIMEBase
+from email.mime.text import MIMEText
 
+
+
+def test():
     pass
+
 
 def Init():
     # 제목
@@ -35,7 +41,7 @@ def Init():
     global searchbox
     global strKeyword
     strKeyword = StringVar()
-    searchbox = Entry(MainWindow, textvariable = strKeyword)
+    searchbox = Entry(MainWindow)
     searchbox.pack()
     searchbox.place(x=10, y=60)
 
@@ -78,7 +84,7 @@ def Init():
     infobox.place(x=240, y=350)
 
     # 이메일 전송 버튼
-    emailbutton = Button(MainWindow, text="이메일로 전송", command=test)
+    emailbutton = Button(MainWindow, text="이메일로 전송", command=EmailButtonAction)
     emailbutton.pack()
     emailbutton.place(x=240, y=450)
 
@@ -158,12 +164,90 @@ def DetailedInfomationAction():
                         elif subitem[33].nodeName == "REFINE_LOTNO_ADDR":
                             infobox.insert(INSERT, "회사명: {0}\n".format(subitem[5].firstChild.nodeValue))
                             infobox.insert(INSERT, "주소: {0}\n".format(subitem[31].firstChild.nodeValue))
-    #infobox.configure(state='disabled')
     pass
 
 def EmailButtonAction():
-    test()
+    global SubWindow
+    SubWindow = Toplevel(MainWindow)
+    SubWindow.title("이메일 전송")
+    SubWindow.geometry("400x300")
+
+    # 이메일 ID
+    global emailid
+    emailidlabel = Label(SubWindow, text="[아이디]")
+    emailidlabel.pack()
+    emailidlabel.place(x=10, y=50)
+
+    emailid = Entry(SubWindow)
+    emailid.pack()
+    emailid.place(x=70, y=55)
+
+    # 이메일 PWD
+    global emailpwd
+    emailpwdlabel = Label(SubWindow, text="[패스워드]")
+    emailpwdlabel.pack()
+    emailpwdlabel.place(x=10, y=75)
+
+    emailpwd = Entry(SubWindow)
+    emailpwd.pack()
+    emailpwd.place(x=70, y=80)
+
+    # 보낼 이메일 주소
+    global emailadress
+    emailadresslabel = Label(SubWindow, text="[주소]")
+    emailadresslabel.pack()
+    emailadresslabel.place(x=10, y=100)
+
+    emailadress = Entry(SubWindow)
+    emailadress.pack()
+    emailadress.place(x=70, y=105)
+
+    # 이메일 전송 버튼
+    sendbutton = Button(SubWindow, text="전송", command=SendButtonAction)
+    sendbutton.pack()
+    sendbutton.place(x=10, y=130)
+
+    SubWindow.mainloop()
     pass
+
+
+def SendButtonAction():
+    ID = emailid.get()
+    PWD = emailpwd.get()
+    Adress = emailadress.get()
+    SelectedItemIndex = listbox.curselection()
+    if len(SelectedItemIndex):
+        global SelectedItemText
+        SelectedItemText = listbox.get(SelectedItemIndex[0])
+
+        companyList = DocData.childNodes
+        companyname = companyList[0].childNodes
+        for item in companyname:
+            if item.nodeName == "row":
+                subitem = item.childNodes
+                for atom in subitem:
+                    if atom.nodeName in "BIZPLC_NM" and atom.firstChild.nodeValue == SelectedItemText:
+                        if subitem[31].nodeName == "REFINE_LOTNO_ADDR":
+                            emailtext = "회사명: " + subitem[5].firstChild.nodeValue + "\n" + "운영여부: " + subitem[9].firstChild.nodeValue + "\n" + "주소명: " + subitem[31].firstChild.nodeValue + "\n"
+                        elif subitem[33].nodeName == "REFINE_LOTNO_ADDR":
+                            emailtext = "회사명: " + subitem[5].firstChild.nodeValue + "\n" + "운영여부: " + subitem[9].firstChild.nodeValue + "\n" + "주소명: " + subitem[33].firstChild.nodeValue + "\n"
+
+    msg = MIMEBase("multipart", "alternative")
+    msg['Subject'] = SelectedItemText + "의 상세정보"
+    msg['From'] = ID
+    msg['To'] = Adress
+    text = MIMEText(emailtext, _charset='UTF-8')
+    msg.attach(text)
+
+    s = smtplib.SMTP("smtp.gmail.com", 587)
+    s.ehlo()
+    s.starttls()
+    s.ehlo()
+    s.login(ID, PWD)
+    s.sendmail(ID, [Adress], msg.as_string())
+    s.close()
+    pass
+
 
 def MakeXML(): # xml 파일 만들기
     url = "https://openapi.gg.go.kr/GameSoftwaresDistribution?KEY=716a00130e0e49a196f9433942b4c728&pIndex=1&pSize=677"
