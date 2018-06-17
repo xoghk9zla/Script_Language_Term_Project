@@ -10,11 +10,6 @@ import smtplib
 from email.mime.base import MIMEBase
 from email.mime.text import MIMEText
 
-from io import BytesIO
-import urllib
-import urllib.request
-from PIL import Image,ImageTk
-
 
 def test():
     pass
@@ -74,17 +69,18 @@ def Init():
     RenderTextScrollbar.pack(side=RIGHT, fill=BOTH)
     listbox.configure(state='disabled')
 
-    # openapi로 이미지 url을 가져옴.
-    global canvas
 
+    # 사진 캔버스
     photo = PhotoImage(file="몽타뉴3.gif")
     canvas = Label(MainWindow, image=photo, height=220, width=240, bg='gray91', relief="ridge")
     canvas.pack()
     canvas.place(x=240, y=110)
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> parent of 420a829... 지도 URL 작성
     # 정보 박스
-
     global infobox
     infobox = Text(MainWindow, width=34, height=7)
     infobox.pack()
@@ -94,7 +90,6 @@ def Init():
     emailbutton = Button(MainWindow, text="이메일로 전송", command=EmailButtonAction)
     emailbutton.pack()
     emailbutton.place(x=240, y=450)
-
 
 
 def Click_RadioButton():
@@ -152,14 +147,13 @@ def PrintlistAction():
 
 
 def DetailedInfomationAction():
-    global canvas
     infobox.delete('0.0', END)
     # 선택된 행이 있으면 그걸 키워드로 검색함
     global SelectedItemText
     SelectedItemIndex = listbox.curselection()
     if len(SelectedItemIndex):
         SelectedItemText = listbox.get(SelectedItemIndex[0])
-        global address
+
         companyList = DocData.childNodes
         companyname = companyList[0].childNodes
         for item in companyname:
@@ -170,9 +164,9 @@ def DetailedInfomationAction():
                         if subitem[31].nodeName == "REFINE_LOTNO_ADDR":
                             infobox.insert(INSERT, "회사명: {0}\n".format(subitem[5].firstChild.nodeValue))
                             infobox.insert(INSERT, "주소: {0}\n".format(subitem[31].firstChild.nodeValue))
-                            address = subitem[31].firstChild.nodeValue
                         elif subitem[33].nodeName == "REFINE_LOTNO_ADDR":
                             infobox.insert(INSERT, "회사명: {0}\n".format(subitem[5].firstChild.nodeValue))
+<<<<<<< HEAD
                             infobox.insert(INSERT, "주소: {0}\n".format(subitem[33].firstChild.nodeValue))
                             print(subitem[33].firstChild.nodeValue)
                             address = subitem[33].firstChild.nodeValue
@@ -200,8 +194,10 @@ def DetailedInfomationAction():
     canvas.configure(image = photo)
     canvas.image=photo
 
+=======
+                            infobox.insert(INSERT, "주소: {0}\n".format(subitem[31].firstChild.nodeValue))
+>>>>>>> parent of 420a829... 지도 URL 작성
     pass
-
 
 def EmailButtonAction():
     global SubWindow
