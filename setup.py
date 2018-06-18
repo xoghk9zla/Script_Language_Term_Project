@@ -1,6 +1,7 @@
-from distutils.core import setup
+from distutils.core import setup, Extension
 
-setup(name='book',
-      version='1.0',
-      py_modules=['book']
-      )
+setup(name='company',
+version='1.0',
+classifiers = [ 'company'],
+packages=['company'],
+)

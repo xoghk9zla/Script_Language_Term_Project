@@ -80,7 +80,13 @@ def Init():
 
     # openapi로 이미지 url을 가져옴.
     global canvas
-    photo = PhotoImage(file="몽타뉴3.gif")
+    url = 'https://static-cdn.jtvnw.net/jtv_user_pictures/0dc01352-cfcc-4045-a3dc-fa310bb35f32-profile_image-300x300.png'
+
+    with urllib.request.urlopen(url) as u:
+        raw_data = u.read()
+
+    im = Image.open(BytesIO(raw_data))
+    photo = ImageTk.PhotoImage(im)
     canvas = Label(MainWindow, height=220, width=240, image=photo, bg='gray91', relief="ridge")
     canvas.pack()
     canvas.place(x=240, y=110)
